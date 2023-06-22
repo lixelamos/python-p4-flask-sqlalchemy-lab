@@ -19,16 +19,65 @@ def home():
 
 @app.route('/animal/<int:id>')
 def animal_by_id(id):
-    return ''
+    animal = Animal.query.get(id)
+
+    if animal is None:
+        return 'Animal not found', 404
+
+    response_body = f'''
+    <ul>ID: {animal.id}</ul>
+    <ul>Name: {animal.name}</ul>
+    <ul>Species: {animal.species}</ul>
+    <ul>Zookeeper: {animal.zookeeper.name}</ul>
+    <ul>Enclosure: {animal.enclosure.environment}</ul>
+    '''
+
+    response = make_response(response_body, 200)
+    return response
+
 
 @app.route('/zookeeper/<int:id>')
 def zookeeper_by_id(id):
-    return ''
+    zookeeper = Zookeeper.query.get(id)
+
+    if zookeeper is None:
+        return 'Zookeeper not found', 404
+
+    animal_list = [f'<li>Animal: {animal.name}</li>' for animal in zookeeper.animals]
+
+    response_body = f'''
+    <ul>ID: {zookeeper.id}</ul>
+    <ul>Name: {zookeeper.name}</ul>
+    <ul>Birthday: {zookeeper.birthday}</ul>
+    <ul>Animals:
+        <ul>{''.join(animal_list)}</ul>
+    </ul>
+    '''
+
+    response = make_response(response_body, 200)
+    return response
+
 
 @app.route('/enclosure/<int:id>')
 def enclosure_by_id(id):
-    return ''
+    enclosure = Enclosure.query.get(id)
 
+    if enclosure is None:
+        return 'Enclosure not found', 404
 
-if __name__ == '__main__':
+    animal_list = [f'<li>Animal: {animal.name}</li>' for animal in enclosure.animals]
+
+    response_body = f'''
+    <ul>ID: {enclosure.id}</ul>
+    <ul>Environment: {enclosure.environment}</ul>
+    <ul>Open to Visitors: {enclosure.open_to_visitors}</ul>
+    <ul>Animals:
+        <ul>{''.join(animal_list)}</ul>
+    </ul>
+    '''
+
+    response = make_response(response_body, 200)
+    return response
+
+if __name__== '__main__':
     app.run(port=5555, debug=True)
